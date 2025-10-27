@@ -40,7 +40,7 @@ public class DetailedFraudDetector extends KeyedProcessFunction<Long, DetailedTr
         if(txAmount >= LARGE_THRESHOLD) {
             DetailedTransaction smallTx = smallTxState.value();
             if(smallTx != null) {
-                boolean sameZipcode = smallTx.getZipcode() == tx.getZipcode();
+                boolean sameZipcode = smallTx.getZipcode().equals(tx.getZipcode());
                 if(sameZipcode) {
                     out.collect(new DetailedAlert());
                 }
@@ -51,17 +51,17 @@ public class DetailedFraudDetector extends KeyedProcessFunction<Long, DetailedTr
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<DetailedAlert> out) {
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<DetailedAlert> out) throws Exception {
         cleanUp(ctx);
     }
 
-    private void registerTimer(Context ctx) {
+    private void registerTimer(Context ctx) throws Exception {
         Long prevTimer = timerState.value();
         if(prevTimer != null) {
             ctx.timerService().deleteProcessingTimeTimer(prevTimer);
         }
 
-        long newTimerState = ctx.timerService().currentProcessingTime() + ONE_MINUTE;
+        long newTimerState = ctx.timerService().currentProcessingTime() + 60_000L;
         ctx.timerService().registerProcessingTimeTimer(newTimerState);
         timerState.update(newTimerState);
     }
