@@ -13,7 +13,7 @@ public class DetailedAlertSink implements SinkFunction<DetailedAlert> {
         DetailedTransaction tx = value.getTx();
         
         if (tx != null) {
-            LOG.info("Detailed Alert - Account: {} | Timestamp: {} | Zipcode: {} | Amount: ${}", 
-                    tx.getAccountId(), tx.getTimestamp(), tx.getZipcode(), tx.getAmount());
+            LOG.info("Detailed Alert - Account: {} | Timestamp: {} | Zipcode: {} | Amount: ${}", tx.getAccountId(), tx.getTimestamp(), tx.getZipcode(), tx.getAmount());
+        }
     }
 }

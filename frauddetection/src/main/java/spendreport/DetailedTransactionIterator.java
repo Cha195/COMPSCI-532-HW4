@@ -2,9 +2,6 @@ package spendreport;
 
 import java.util.Random;
 import java.util.Iterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * DetailedTransactionIterator - Generates random transaction data for testing
  * 
@@ -20,8 +17,6 @@ import org.slf4j.LoggerFactory;
  * - Geographic clustering through zipcode selection
  */
 public class DetailedTransactionIterator implements Iterator<DetailedTransaction> {
-    private static final Logger LOG = LoggerFactory.getLogger(DetailedTransactionIterator.class);
-    
     // Predefined account IDs for testing (5 different accounts)
     private static final long[] ACCOUNT_IDS = {1,2,3,4,5};
     
@@ -37,7 +32,7 @@ public class DetailedTransactionIterator implements Iterator<DetailedTransaction
     public DetailedTransactionIterator() {
         this.rnd = new Random();
         // Start timestamp from current time (rounded to nearest second)
-        this.nextTimestamp = (System.currentTimeMillis() / 1000) * 1000;
+        this.nextTimestamp = 0;
     }
 
     /**
@@ -75,11 +70,8 @@ public class DetailedTransactionIterator implements Iterator<DetailedTransaction
         // Create transaction with generated data
         DetailedTransaction tx = new DetailedTransaction(accountId, nextTimestamp, amount, zipcode);
         
-        // DEBUG: Log transaction amount
-        LOG.info("Amount: ${}", amount);
-        
         // Increment timestamp by 1 second for next transaction
-        nextTimestamp += 1_000L;
+        nextTimestamp += 1;
         
         return tx;
     }
