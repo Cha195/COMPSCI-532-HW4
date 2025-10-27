@@ -29,9 +29,9 @@ public class FraudDetector extends KeyedProcessFunction<Long, DetailedTransactio
 
     private static final long serialVersionUID = 1L;
 
-    private static final double SMALL_AMOUNT = 10.00;
-    private static final double LARGE_AMOUNT = 500.00;
-    private static final long ONE_MINUTE = 60 * 1000;
+    private static final double SMALL_AMOUNT = 10.00;  // Transactions under $10.00 are considered "small"
+    private static final double LARGE_AMOUNT = 200.00; // Transactions > $200.00 are considered "large" (decreased from $500.00)
+    private static final long ONE_MINUTE = 60 * 1000;  // Timer duration: 1 minute in milliseconds
 
     private transient ValueState<Boolean> flagState;
     private transient ValueState<Long> timerState;
