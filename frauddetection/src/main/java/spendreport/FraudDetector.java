@@ -25,13 +25,13 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 
-public class FraudDetector extends KeyedProcessFunction<Long, DetailedTransaction, DetailedAlert> {
+public class FraudDetector extends KeyedProcessFunction<Long, Transaction, Alert> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final double SMALL_AMOUNT = 10.00;  // Transactions under $10.00 are considered "small"
-    private static final double LARGE_AMOUNT = 200.00; // Transactions > $200.00 are considered "large" (decreased from $500.00)
-    private static final long ONE_MINUTE = 60 * 1000;  // Timer duration: 1 minute in milliseconds
+    private static final double SMALL_AMOUNT = 1.00;
+    private static final double LARGE_AMOUNT = 500.00;
+    private static final long ONE_MINUTE = 60 * 1000;
 
     private transient ValueState<Boolean> flagState;
     private transient ValueState<Long> timerState;
@@ -51,9 +51,9 @@ public class FraudDetector extends KeyedProcessFunction<Long, DetailedTransactio
 
     @Override
     public void processElement(
-            DetailedTransaction transaction,
+            Transaction transaction,
             Context context,
-            Collector<DetailedAlert> collector) throws Exception {
+            Collector<Alert> collector) throws Exception {
 
         // Get the current state for the current key
         Boolean lastTransactionWasSmall = flagState.value();
@@ -62,8 +62,8 @@ public class FraudDetector extends KeyedProcessFunction<Long, DetailedTransactio
         if (lastTransactionWasSmall != null) {
             if (transaction.getAmount() > LARGE_AMOUNT) {
                 //Output an alert downstream
-                DetailedAlert alert = new DetailedAlert();
-                alert.setTx(transaction);
+                Alert alert = new Alert();
+                alert.setId(transaction.getAccountId());
 
                 collector.collect(alert);
             }
@@ -83,20 +83,16 @@ public class FraudDetector extends KeyedProcessFunction<Long, DetailedTransactio
     }
 
     @Override
-    public void onTimer(long timestamp, OnTimerContext ctx, Collector<DetailedAlert> out) {
-        // remove flag after 1 minute
+    public void onTimer(long timestamp, OnTimerContext ctx, Collector<Alert> out) {
         timerState.clear();
         flagState.clear();
     }
 
     private void cleanUp(Context ctx) throws Exception {
-        // delete timer
         Long timer = timerState.value();
         ctx.timerService().deleteProcessingTimeTimer(timer);
 
-        // clean up all state
         timerState.clear();
         flagState.clear();
     }
 }
-

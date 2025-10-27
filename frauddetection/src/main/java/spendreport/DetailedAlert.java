@@ -2,7 +2,7 @@ package spendreport;
 
 
 public final class DetailedAlert {
-    private DetailedTransaction tx;  // The transaction that triggered this alert
+    private DetailedTransaction tx;
 
     /**
      * Default constructor - required for Flink serialization
@@ -17,7 +17,6 @@ public final class DetailedAlert {
         this.tx = tx;
     }
 
-    // Getter and setter methods for the transaction
     public DetailedTransaction getTx() { return tx; }
     public void setTx(DetailedTransaction tx) { this.tx = tx; }
 }

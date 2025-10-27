@@ -12,6 +12,7 @@ public class DetailedAlertSink implements SinkFunction<DetailedAlert> {
     public void invoke(DetailedAlert value, SinkFunction.Context context) {
         DetailedTransaction tx = value.getTx();
         
+        // Log the detailed alert if the transaction is not null
         if (tx != null) {
             LOG.info("Detailed Alert - Account: {} | Timestamp: {} | Zipcode: {} | Amount: ${}", tx.getAccountId(), tx.getTimestamp(), tx.getZipcode(), tx.getAmount());
         }
